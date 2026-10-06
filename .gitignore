@@ -1,8 +1,8 @@
 # ==============================================================
-# DADOS — regra inviolável: nenhum dado versionado
+# DADOS — originais brutos nunca são versionados
+# (samples/ é versionada: contém só imagens próprias, sem EXIF)
 # ==============================================================
 data/
-samples/
 images/
 *.zip
 
