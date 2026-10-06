@@ -21,3 +21,9 @@ e a decisão tomada. Ordem cronológica.
   framework — custo desproporcional para um MVP. Documentado no contrato.
 - **Erros do cliente (4xx) registrados como `ERROR` com traceback** no log do BentoML,
   poluindo o log. Comportamento do framework.
+
+
+- **Dependências do framework usam APIs depreciadas**: os testes emitem avisos do
+  BentoML (APIs do Pydantic a serem removidas no Pydantic 3), do Starlette e do pathspec.
+  Não afetam o funcionamento hoje, mas uma instalação sem versões fixadas poderia quebrar
+  numa atualização futura — risco mitigado pelo `uv.lock`, que trava as versões testadas.

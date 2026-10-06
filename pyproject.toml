@@ -24,3 +24,15 @@ explicit = true
 
 [tool.uv.sources]
 torch = [{ index = "pytorch-cpu" }]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+]
+
+
+# --- Configuração do pytest ---
+[tool.pytest.ini_options]
+testpaths = ["tests"]   # onde procurar testes
+pythonpath = ["."]      # permite "from service import ..." a partir da pasta tests/
