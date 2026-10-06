@@ -1,12 +1,13 @@
 """Serviço BentoML de classificação de imagens com ResNet-50 (ImageNet-1k)."""
 
 import time
+from pathlib import Path
 from typing import Annotated
 
 import bentoml
 import torch
-from PIL import ImageOps
-from PIL.Image import Image
+from bentoml.exceptions import InvalidArgument
+from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 
@@ -31,6 +32,20 @@ class ClassificationResponse(BaseModel):
     predictions: list[Prediction] = Field(description="Classes ordenadas da mais para a menos provável")
 
 
+# ---------------------- Decodificação com erro do CLIENTE (400) ----------------------
+def load_image(path: Path) -> Image.Image:
+    """Abre e valida a imagem pelo CONTEÚDO; arquivo inválido vira 400, não 500."""
+    try:
+        with Image.open(path) as img:
+            img.load()  # força a leitura completa: detecta arquivo truncado aqui, dentro do try
+            # Fotos de celular vêm "deitadas" com a rotação no EXIF: aplica antes de tudo
+            return ImageOps.exif_transpose(img).convert("RGB")
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise InvalidArgument(
+            "O arquivo enviado não é uma imagem válida ou está corrompido. Envie JPEG, PNG, WEBP ou BMP."
+        ) from exc
+
+
 # ---------------------------------- Serviço ----------------------------------
 @bentoml.service(traffic={"timeout": 30})  # requisição que passar de 30 s é abortada
 class ImageClassifier:
@@ -43,15 +58,14 @@ class ImageClassifier:
     @bentoml.api
     def classify(
         self,
-        image: Image,
+        image: Path,  # o BentoML só recebe o arquivo; a decodificação é nossa (load_image)
         top_k: Annotated[int, Field(ge=1, le=10, description="Quantas classes devolver (1 a 10)")] = 5,
     ) -> ClassificationResponse:
         """Recebe uma imagem e devolve as top_k classes mais prováveis do ImageNet-1k."""
         t0 = time.perf_counter()
 
-        # Fotos de celular vêm "deitadas" com a rotação no EXIF: aplica antes de tudo
-        image = ImageOps.exif_transpose(image).convert("RGB")
-        inputs = self.processor(images=image, return_tensors="pt")
+        pil_image = load_image(image)
+        inputs = self.processor(images=pil_image, return_tensors="pt")
         with torch.inference_mode():
             probs = self.model(**inputs).logits.softmax(dim=-1)[0]
         top = torch.topk(probs, k=top_k)
