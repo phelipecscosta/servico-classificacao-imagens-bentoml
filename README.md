@@ -218,7 +218,7 @@ Os testes verificam o **funcionamento do serviço** (códigos HTTP, contrato, va
 erros), e não o acerto do modelo.
 
 **Evidências de execução:** respostas reais do serviço em [`docs/evidencias/`](docs/evidencias/)
-(5 casos `200` e 2 casos `400`).
+(5 casos `200` e 2 casos `400`), além de um print do Swagger (`swagger.jpg`).
 
 ### Imagens de demonstração (`samples/`)
 
