@@ -326,15 +326,40 @@ interpretação de saídas e erros; e rascunho deste README.
 
 **Avaliação crítica:**
 
-<!-- PREENCHER COM A SUA AVALIAÇÃO. Perguntas-guia:
-- Onde a ferramenta acertou e economizou tempo?
-- Onde errou ou precisou de correção? (ex.: contagem de testes prevista como 13, real 12;
-  previsão de alta confiança para a imagem de ruído, que veio com 2,5%)
-- Onde ela desviou do foco e você precisou redirecionar? (ex.: investigação de tempo de rede)
-- O que você verificou por conta própria em vez de aceitar a resposta?
-- O que você aprendeu e conseguiria refazer sem a ferramenta?
--->
+*Onde ajudou.* A ferramenta foi mais útil em boas práticas que eu não conhecia ou não teria
+priorizado: fixar o ambiente com `uv.lock`, forçar o PyTorch CPU por índice explícito (evitando
+~2,5 GB de CUDA em Linux), fixar o `revision` do modelo, remover o EXIF/GPS das fotos antes de
+publicá-las e testar o serviço em memória com `to_asgi()`. Também antecipou armadilhas do Windows
+que me custariam tempo (`curl` como apelido de `Invoke-WebRequest`, arquivos UTF-16 gerados pelo
+PowerShell, o aviso de `LF`/`CRLF`).
 
+*Onde errou ou precisou de correção.* Várias previsões não se confirmaram e só foram detectadas
+porque executei e conferi cada passo:
+- previu 13 testes; o pytest coletou 12 (erro de contagem);
+- previu confiança alta para a imagem de ruído; o resultado real foi 2,5% — o que, na verdade,
+  enriqueceu a análise (um limiar de confiança detecta o ruído, mas não a cerâmica com 98%);
+- estimou de 3 a 6 minutos de instalação; o teste em clone limpo mediu até ~10 minutos;
+- sugeriu apagar uma pasta "Scrips" antes de saber onde ela estava — era a `Scripts` do `.venv`,
+  essencial ao ambiente; a localização foi verificada por mim antes de qualquer remoção;
+- incluiu um passo desnecessário (criar o venv com `uv venv` antes do `uv add`, que já o cria) e
+  um erro de digitação no README ("cinga").
+
+*Onde precisei redirecionar.* Em dois momentos a ferramenta desviou do foco do projeto, que é a
+camada de serviço: aprofundou a análise de acerto do modelo além do necessário e propôs investigar
+um atraso de ~200 ms de conexão em `localhost`. Nos dois casos interrompi e voltei ao escopo.
+
+*O que verifiquei por conta própria.* Não aceitei código ou explicação sem executar: cada bloco foi
+rodado e a saída conferida; o defeito do erro 500 (arquivo que não é imagem) foi encontrado por
+teste deliberado e confirmado pelo traceback; os resultados foram comparados entre quatro clientes
+diferentes (script, `curl`, Swagger e `demo.py`); e o README foi validado num clone limpo, com
+caches vazios e sem o meu Python instalado.
+
+*O que aprendi.* As etapas fundamentais para se colocar um modelo em serviço através do BentoML, podendo a quebrar em blocos, seus respectivos objetivos e potenciais problemas, como realizar testes e validações.
+
+*Conclusão.* O uso de ferramentas de IA potencializa as suas intenções e é uma ferramenta poderosa de aprendizado através do exemplo e exposição de diversos cenários possíveis e respostas personalizadas a perguntas específicas ou amplas.
+
+> Este texto de avaliação foi rascunhado pela própria ferramenta a partir do histórico da conversa
+> e revisado e editado por mim.
 ---
 
 ## 10. Licença
