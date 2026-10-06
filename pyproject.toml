@@ -1,0 +1,25 @@
+[project]
+name = "servico-classificacao-imagens-bentoml"
+version = "0.1.0"
+description = "Serviço de classificação de imagens (ResNet-50) com BentoML"
+readme = "README.md"
+license = "MIT"
+# Só a família 3.11: é a única versão testada (lock mais simples e honesto)
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "bentoml>=1.4.39",
+    "pillow>=12.3.0",
+    "torch>=2.14.1",
+    "transformers>=5.19.0",
+]
+
+
+# --- PyTorch: sempre a variante CPU, em qualquer sistema operacional ---
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+# explicit = true: este índice SÓ é usado para os pacotes listados em [tool.uv.sources]
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
