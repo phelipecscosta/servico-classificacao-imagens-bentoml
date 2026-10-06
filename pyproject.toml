@@ -9,6 +9,7 @@ requires-python = ">=3.11,<3.12"
 dependencies = [
     "bentoml>=1.4.39",
     "pillow>=12.3.0",
+    "pydantic>=2.13.5",
     "torch>=2.14.1",
     "transformers>=5.19.0",
 ]
