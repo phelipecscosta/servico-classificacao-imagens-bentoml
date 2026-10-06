@@ -1,6 +1,9 @@
 # Windows: receitas executadas pelo PowerShell (Linux/macOS: sh, o padrão do just)
 set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 
+# Carrega variáveis do .env (se existir) em todas as receitas
+set dotenv-load := true
+
 # Lista as receitas disponíveis
 default:
     @just --list
