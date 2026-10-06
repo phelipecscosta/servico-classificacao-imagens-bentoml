@@ -13,6 +13,7 @@ e a decisão tomada. Ordem cronológica.
 | 6 | Fotos de celular expõem localização (GPS no EXIF) — dado pessoal (LGPD) | Metadados EXIF incluem coordenadas | `prepare_samples.py` remove todo EXIF; originais em `data/` (ignorada) |
 | 7 | `curl` no PowerShell não é o curl | É apelido de `Invoke-WebRequest` | Usar `curl.exe` nas instruções |
 | 8 | Arquivo que não é imagem devolvia **500** (erro do servidor) | Traceback: decodificação ocorria dentro do BentoML, antes do método, sem conversão para 4xx | Parâmetro `image: Path` + `load_image()` própria: falha vira `InvalidArgument` → **400** |
+| 9 | README prometia "3 a 6 minutos" de instalação | Teste em clone limpo, com caches vazios e sem Python local, mediu até ~10 min | Tempo corrigido no README com base na medição; registradas as duas versões de Python testadas (3.11.4 e 3.11.17) |
 
 ## Limitações observadas (não corrigidas, por decisão)
 
@@ -27,3 +28,4 @@ e a decisão tomada. Ordem cronológica.
   BentoML (APIs do Pydantic a serem removidas no Pydantic 3), do Starlette e do pathspec.
   Não afetam o funcionamento hoje, mas uma instalação sem versões fixadas poderia quebrar
   numa atualização futura — risco mitigado pelo `uv.lock`, que trava as versões testadas.
+

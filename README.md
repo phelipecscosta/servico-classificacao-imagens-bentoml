@@ -27,7 +27,7 @@ reprodutibilidade e testes — não o treinamento do modelo.
 
 | Ferramenta | Versão testada | Obrigatória? |
 |---|---|---|
-| Python | 3.11.4 | Sim — mas **não precisa instalar**: o `uv` baixa um Python 3.11 se a máquina não tiver |
+| Python | 3.11.4 e 3.11.17 | Sim — mas **não precisa instalar**: o `uv` baixa um Python 3.11 se a máquina não tiver |
 | git | 2.50.1 | Sim |
 | uv | 0.12.23 | Sim |
 | just | 1.58.0 | Não — há comandos equivalentes sem ele |
@@ -66,7 +66,9 @@ uv tool install rust-just
 
 ## 2. Do `git clone` à primeira predição
 
-**Tempo aproximado:** 3 a 6 minutos na primeira vez (depende da conexão); segundos nas seguintes.
+**Tempo aproximado:** até ~10 minutos na primeira execução — medido num clone limpo, com caches vazios
+e sem Python instalado, incluindo o download do Python 3.11, das dependências (~300 MB) e do modelo
+(~100 MB). Nas execuções seguintes, segundos.
 
 ### Passo 1 — Clonar e instalar o ambiente
 
