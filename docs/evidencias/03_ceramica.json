@@ -1,0 +1,1 @@
+{"model":{"id":"microsoft/resnet-50","revision":"34c2154c194f829b11125337b98c8f5f9965ff19"},"inference_ms":85.8,"predictions":[{"label":"tray","score":0.98},{"label":"shield, buckler","score":0.01},{"label":"washbasin, handbasin, washbowl, lavabo, wash-hand basin","score":0.0014}]}

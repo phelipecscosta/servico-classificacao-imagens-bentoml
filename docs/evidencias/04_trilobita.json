@@ -1,0 +1,1 @@
+{"model":{"id":"microsoft/resnet-50","revision":"34c2154c194f829b11125337b98c8f5f9965ff19"},"inference_ms":43.1,"predictions":[{"label":"trilobite","score":1.0},{"label":"chambered nautilus, pearly nautilus, nautilus","score":0.0},{"label":"letter opener, paper knife, paperknife","score":0.0}]}

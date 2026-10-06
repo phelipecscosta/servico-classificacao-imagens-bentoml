@@ -1,0 +1,1 @@
+{"model":{"id":"microsoft/resnet-50","revision":"34c2154c194f829b11125337b98c8f5f9965ff19"},"inference_ms":57.7,"predictions":[{"label":"ballpoint, ballpoint pen, ballpen, Biro","score":1.0},{"label":"rubber eraser, rubber, pencil eraser","score":0.0},{"label":"quill, quill pen","score":0.0}]}
