@@ -14,12 +14,10 @@ e a decisão tomada. Ordem cronológica.
 | 7 | `curl` no PowerShell não é o curl | É apelido de `Invoke-WebRequest` | Usar `curl.exe` nas instruções |
 | 8 | Arquivo que não é imagem devolvia **500** (erro do servidor) | Traceback: decodificação ocorria dentro do BentoML, antes do método, sem conversão para 4xx | Parâmetro `image: Path` + `load_image()` própria: falha vira `InvalidArgument` → **400** |
 | 9 | README prometia "3 a 6 minutos" de instalação | Teste em clone limpo, com caches vazios e sem Python local, mediu até ~10 min | Tempo corrigido no README com base na medição; registradas as duas versões de Python testadas (3.11.4 e 3.11.17) |
+| 10 | Sugestão do professor: usar `Image.Image` (mais idiomático); com ele, arquivo inválido voltava a dar **500** | A decodificação do BentoML ocorre **dentro da validação do Pydantic**; o erro do Pillow não é um erro de validação e "vaza" como 500 | `WrapValidator` envolve a decodificação: a falha vira `ValueError` → erro de validação → **400**. Mantém `Image.Image` e unifica o formato de todos os erros de entrada |
 
 ## Limitações observadas (não corrigidas, por decisão)
 
-- **Dois formatos de erro**: validação do Pydantic devolve `{"error", "detail"}`; erros
-  levantados pelo serviço devolvem `[{"error"}]`. Unificar exigiria interceptar exceções do
-  framework — custo desproporcional para um MVP. Documentado no contrato.
 - **Erros do cliente (4xx) registrados como `ERROR` com traceback** no log do BentoML,
   poluindo o log. Comportamento do framework.
 

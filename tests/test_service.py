@@ -7,7 +7,10 @@ from starlette.testclient import TestClient
 
 from service import MODEL_REVISION, ClassificationResponse, ImageClassifier
 
-SAMPLES = sorted((Path(__file__).parent.parent / "samples").glob("*.*"))
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
+SAMPLES = sorted(
+    p for p in (Path(__file__).parent.parent / "samples").iterdir() if p.suffix.lower() in IMAGE_EXTENSIONS
+)
 URL = "/classify"
 
 
@@ -58,7 +61,7 @@ def test_arquivo_nao_imagem_retorna_400(client):
     # Regressão da T2.3: antes devolvia 500
     resp = client.post(URL, files={"image": ("falso.jpg", b"isto nao e uma imagem", "image/jpeg")})
     assert resp.status_code == 400
-    assert "não é uma imagem válida" in resp.text
+    assert "não é uma imagem válida" in str(resp.json())  # json() decodifica acentos escapados
 
 
 def test_requisicao_sem_imagem_retorna_400(client):

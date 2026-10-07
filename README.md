@@ -183,18 +183,19 @@ curl.exe -X POST http://localhost:3000/classify -F "image=@samples/02_mesa.jpg" 
 
 ### Erros
 
-Todo erro causado pela requisição devolve **`400 Bad Request`**. O BentoML usa **dois formatos** de corpo:
+Todo erro causado pela requisição devolve **`400 Bad Request`**, sempre no mesmo formato,
+apontando o campo inválido em `loc`:
 
-**Validação de campos** (`top_k` fora da faixa, `image` ausente):
+| Caso | `loc` | Mensagem (`msg`) |
+|---|---|---|
+| `top_k` fora de 1 a 10 | `["top_k"]` | `Input should be less than or equal to 10` |
+| Requisição sem imagem | `["image"]` | `Field required` |
+| Arquivo que não é imagem ou está corrompido | `["image"]` | `Value error, O arquivo enviado não é uma imagem válida...` |
+
+Exemplo (arquivo que não é imagem):
 
 ```json
-{"error":"1 validation error for Input","detail":[{"type":"less_than_equal","loc":["top_k"],"msg":"Input should be less than or equal to 10"}]}
-```
-
-**Arquivo que não é imagem** (ou imagem corrompida):
-
-```json
-[{"error":"O arquivo enviado não é uma imagem válida ou está corrompido. Envie JPEG, PNG, WEBP ou BMP."}]
+{"error":"1 validation error for Input","detail":[{"type":"value_error","loc":["image"],"msg":"Value error, O arquivo enviado não é uma imagem válida ou está corrompido. Envie JPEG, PNG, WEBP ou BMP."}]}
 ```
 
 ### Endpoints automáticos do BentoML

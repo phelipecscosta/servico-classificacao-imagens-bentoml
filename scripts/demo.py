@@ -9,7 +9,10 @@ from pathlib import Path
 import httpx
 
 BASE_URL = "http://localhost:3000"
-SAMPLES = sorted((Path(__file__).parent.parent / "samples").glob("*.*"))
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
+SAMPLES = sorted(
+    p for p in (Path(__file__).parent.parent / "samples").iterdir() if p.suffix.lower() in IMAGE_EXTENSIONS
+)
 
 
 def main() -> None:

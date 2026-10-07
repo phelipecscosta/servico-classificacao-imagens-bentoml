@@ -1,14 +1,12 @@
 """Serviço BentoML de classificação de imagens com ResNet-50 (ImageNet-1k)."""
 
 import time
-from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import bentoml
 import torch
-from bentoml.exceptions import InvalidArgument
 from PIL import Image, ImageOps, UnidentifiedImageError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidatorFunctionWrapHandler, WrapValidator
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 
 MODEL_ID = "microsoft/resnet-50"
@@ -32,18 +30,21 @@ class ClassificationResponse(BaseModel):
     predictions: list[Prediction] = Field(description="Classes ordenadas da mais para a menos provável")
 
 
-# ---------------------- Decodificação com erro do CLIENTE (400) ----------------------
-def load_image(path: Path) -> Image.Image:
-    """Abre e valida a imagem pelo CONTEÚDO; arquivo inválido vira 400, não 500."""
+# ------------- Entrada: imagem decodificada pelo BentoML, com falha virando 400 -------------
+def decode_or_400(value: Any, handler: ValidatorFunctionWrapHandler) -> Image.Image:
+    """Envolve a decodificação do BentoML: arquivo inválido vira erro de VALIDAÇÃO (400), não 500."""
     try:
-        with Image.open(path) as img:
-            img.load()  # força a leitura completa: detecta arquivo truncado aqui, dentro do try
-            # Fotos de celular vêm "deitadas" com a rotação no EXIF: aplica antes de tudo
-            return ImageOps.exif_transpose(img).convert("RGB")
+        img = handler(value)  # o BentoML abre a imagem aqui (validação original)
+        img.load()            # força a leitura completa: detecta arquivo truncado ainda na validação
+        return img
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
-        raise InvalidArgument(
+        # ValueError é o sinal que o Pydantic entende como "dado inválido" -> o BentoML responde 400
+        raise ValueError(
             "O arquivo enviado não é uma imagem válida ou está corrompido. Envie JPEG, PNG, WEBP ou BMP."
         ) from exc
+
+
+ValidImage = Annotated[Image.Image, WrapValidator(decode_or_400)]
 
 
 # ---------------------------------- Serviço ----------------------------------
@@ -58,13 +59,14 @@ class ImageClassifier:
     @bentoml.api
     def classify(
         self,
-        image: Path,  # o BentoML só recebe o arquivo; a decodificação é nossa (load_image)
+        image: ValidImage,  # imagem enviada pelo cliente, já decodificada e validada
         top_k: Annotated[int, Field(ge=1, le=10, description="Quantas classes devolver (1 a 10)")] = 5,
     ) -> ClassificationResponse:
         """Recebe uma imagem e devolve as top_k classes mais prováveis do ImageNet-1k."""
         t0 = time.perf_counter()
 
-        pil_image = load_image(image)
+        # Fotos de celular vêm "deitadas" com a rotação no EXIF: aplica antes de tudo
+        pil_image = ImageOps.exif_transpose(image).convert("RGB")
         inputs = self.processor(images=pil_image, return_tensors="pt")
         with torch.inference_mode():
             probs = self.model(**inputs).logits.softmax(dim=-1)[0]
