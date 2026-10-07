@@ -299,6 +299,24 @@ Observadas com as imagens de `samples/` (ver [`docs/evidencias/`](docs/evidencia
 Problemas de **engenharia** encontrados durante o desenvolvimento (e como foram resolvidos) estão em
 [`docs/problemas_e_ajustes.md`](docs/problemas_e_ajustes.md).
 
+## Onde ficam os arquivos baixados e como removê-los
+
+O modelo e os pacotes **não ficam na pasta do projeto**: são guardados em caches na pasta do
+usuário e reaproveitados nas execuções seguintes (e por outros projetos). Apagar a pasta do
+projeto remove o código e o `.venv`, mas **não** esses caches.
+
+| O quê | Onde fica | Tamanho aprox. | Como remover |
+|---|---|---|---|
+| Modelo ResNet-50 | `~/.cache/huggingface/hub/models--microsoft--resnet-50` | ~100 MB | Apagar a pasta |
+| Pacotes Python | Cache do uv (`uv cache dir` mostra o caminho) | ~1 GB | `uv cache clean` (afeta todos os projetos que usam o uv) |
+| Ambiente virtual | `.venv/` dentro do projeto | ~1 GB | Apagado junto com o projeto |
+
+No Windows, `~` corresponde a `C:\Users\<usuário>`. Remover o modelo:
+
+​```powershell
+Remove-Item -Recurse -Force "$env:USERPROFILE\.cache\huggingface\hub\models--microsoft--resnet-50"
+​```
+
 ---
 
 ## 8. Problemas comuns
