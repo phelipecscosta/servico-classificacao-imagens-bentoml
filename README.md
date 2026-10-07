@@ -6,6 +6,29 @@ usando o modelo pré-treinado **ResNet-50** (`microsoft/resnet-50`, ImageNet-1k)
 O foco do projeto é a **camada de serviço**: contrato de API, validação, tratamento de erros,
 reprodutibilidade e testes — não o treinamento do modelo.
 
+## Versões
+
+| Tag | Data | Situação |
+|---|---|---|
+| `sr1` | 06/10/2026 | Entrega no prazo (congelada) |
+| **`sr1.1`** | 07/10/2026 | **Versão oficial atual** — esta página descreve esta versão |
+
+**O que mudou da `sr1` para a `sr1.1`:**
+
+- **Entrada do endpoint como `Image.Image`** (sugestão do professor), no lugar de `Path`. Com o tipo
+  `Image.Image`, um arquivo que não é imagem voltaria a gerar erro `500`; a decodificação do BentoML
+  passou a ser envolvida por um `WrapValidator` do Pydantic, que converte a falha em erro de validação
+  e mantém a resposta `400` (ver problema nº 10 em [`docs/problemas_e_ajustes.md`](docs/problemas_e_ajustes.md)).
+- **Formato de erro unificado:** todos os erros de entrada agora seguem o mesmo formato
+  (`{"error", "detail"}`, com o campo inválido em `loc`). Na `sr1`, o erro de arquivo inválido usava
+  um formato diferente.
+- **Testes e demonstração mais robustos:** passam a considerar apenas arquivos de imagem da pasta
+  `samples/`, ignorando qualquer outro arquivo deixado ali por engano.
+- **Documentação:** tabela consolidada dos comandos do `justfile` e localização dos caches
+  (modelo e pacotes) com instruções de remoção.
+
+Para obter uma versão específica: `git checkout sr1` ou `git checkout sr1.1`.
+
 ---
 
 ## Sumário
