@@ -217,10 +217,9 @@ Todo erro causado pela requisição devolve **`400 Bad Request`**. O BentoML usa
 | `just setup` | `uv sync --locked` | Instala o ambiente exato do `uv.lock` |
 | `just all` | `uv sync --locked && uv run pytest -v` | Comando único: instala e valida com predições reais |
 | `just serve` | `uv run bentoml serve service:ImageClassifier` | Sobe o serviço em `http://localhost:3000` |
-| `just test` | `uv run pytest -v` | Roda os 12 testes (sem precisar do servidor) |
-| `just demo` | `uv run python scripts/demo.py` | Envia as amostras ao serviço rodando |
-| `just check-model` | `uv run python scripts/check_model.py` | Testa o modelo isolado, fora do BentoML |
-
+| `just test` | `uv run pytest -v` | 12 testes do serviço em memória (não precisa do servidor)|
+| `just demo` | `uv run python scripts/demo.py` | Envia as 5 amostras + 1 caso de erro ao serviço **rodando**  |
+| `just check-model` | `uv run python scripts/check_model.py` | Testa o modelo isolado, fora do BentoML (diagnóstico) |
 
 Os testes verificam o **funcionamento do serviço** (códigos HTTP, contrato, valores-limite de `top_k`,
 erros), e não o acerto do modelo.
